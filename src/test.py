@@ -9,7 +9,11 @@ from utils.visualization import plot_confusion_matrix, plot_roc_curve
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.metrics import roc_auc_score
 import torch
+from train import SimpleNN
+import warnings
 
+# 忽略警告
+warnings.filterwarnings('ignore')
 
 def calculate_metrics(y_true, y_pred, y_prob):
     """计算各种评估指标
@@ -26,13 +30,7 @@ def calculate_metrics(y_true, y_pred, y_prob):
         'f1': f1_score(y_true, y_pred, average='weighted')
     }
     
-    if y_prob is not None:
-        try:
-            metrics['auc'] = roc_auc_score(y_true, y_prob, multi_class='ovr')
-        except:
-            metrics['auc'] = np.nan
-    
-    return metrics 
+    return metrics
 
 
 def test(feature_extractor, model, config):
@@ -46,6 +44,9 @@ def test(feature_extractor, model, config):
     # 特征降维
     if config['dimensionality_reduction']['use']:
         test_features = feature_extractor.transform_features(test_features, test_labels)
+    
+    # 将NumPy数组转换为PyTorch张量
+    test_features = torch.FloatTensor(test_features)
     
     # 预测
     model.eval()
@@ -64,7 +65,7 @@ def test(feature_extractor, model, config):
     
     # 绘制混淆矩阵和ROC曲线
     plot_confusion_matrix(test_labels.numpy(), predictions.numpy(), config['output']['results_dir'])
-    plot_roc_curve(test_labels.numpy(), probabilities.numpy(), config['output']['results_dir'])
+    # plot_roc_curve(test_labels.numpy(), probabilities.numpy(), config['output']['results_dir'])
 
 
 def main(args):
