@@ -8,6 +8,7 @@ from extractor import FeatureExtractor
 from utils.visualization import plot_confusion_matrix, plot_roc_curve
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.metrics import roc_auc_score
+import torch
 
 
 def calculate_metrics(y_true, y_pred, y_prob):
@@ -34,7 +35,7 @@ def calculate_metrics(y_true, y_pred, y_prob):
     return metrics 
 
 
-def test(feature_extractor, classifier, config):
+def test(feature_extractor, model, config):
     # 加载测试数据
     test_features, test_labels = load_data(
         config['data']['test_dir'],
@@ -47,11 +48,14 @@ def test(feature_extractor, classifier, config):
         test_features = feature_extractor.transform_features(test_features, test_labels)
     
     # 预测
-    predictions = classifier.predict(test_features)
-    probabilities = classifier.predict_proba(test_features)
+    model.eval()
+    with torch.no_grad():
+        outputs = model(test_features)
+        _, predictions = torch.max(outputs, 1)
+        probabilities = torch.nn.functional.softmax(outputs, dim=1)
     
     # 计算评估指标
-    metrics = calculate_metrics(test_labels, predictions, probabilities)
+    metrics = calculate_metrics(test_labels.numpy(), predictions.numpy(), probabilities.numpy())
     
     # 输出评估结果
     print("\n评估结果:")
@@ -59,8 +63,8 @@ def test(feature_extractor, classifier, config):
         print(f"{metric_name}: {value:.4f}")
     
     # 绘制混淆矩阵和ROC曲线
-    plot_confusion_matrix(test_labels, predictions, config['output']['results_dir'])
-    plot_roc_curve(test_labels, probabilities, config['output']['results_dir'])
+    plot_confusion_matrix(test_labels.numpy(), predictions.numpy(), config['output']['results_dir'])
+    plot_roc_curve(test_labels.numpy(), probabilities.numpy(), config['output']['results_dir'])
 
 
 def main(args):
@@ -69,23 +73,13 @@ def main(args):
     print(f"开始测试: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     # 加载模型
-    svm = SVC(
-        kernel=config['model']['kernel'],
-        C=config['model']['C'],
-        gamma=config['model']['gamma'],
-        probability=config['model']['probability'],
-        verbose=config['model']['verbose'],
-        cache_size=config['model']['cache_size'],
-        max_iter=config['model']['max_iter'],
-        tol=config['model']['tol'],
-        class_weight=config['model']['class_weight']
-    )
-    svm = joblib.load(config['output']['model_path'])
+    model = SimpleNN(input_size=config['model']['input_size'], hidden_size=128, output_size=config['model']['output_size'])
+    model.load_state_dict(torch.load(config['output']['model_path']))
     
     # 加载特征提取器
     feature_extractor = FeatureExtractor.load(config['output']['feature_extractor_path'])
     
-    test(feature_extractor, svm, config)
+    test(feature_extractor, model, config)
     
     print(f"测试完成: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
