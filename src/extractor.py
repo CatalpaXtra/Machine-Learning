@@ -1,7 +1,5 @@
 import numpy as np
 import cv2
-from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input as vgg_preprocess
-from tensorflow.keras.preprocessing import image
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import joblib

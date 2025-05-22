@@ -28,15 +28,6 @@ vgg16:
   
 # 通用PyTorch模型参数
 model:
-  kernel: "rbf"  # 使用RBF核函数，通常比线性核函数效果更好
-  C: 10.0  # 增加C值，允许更复杂的决策边界
-  gamma: "scale"  # 自动缩放gamma值
-  probability: true
-  class_weight: "balanced"  # 处理类别不平衡
-  verbose: false
-  cache_size: 4000  # 增加缓存大小
-  max_iter: 1000  # 增加最大迭代次数
-  tol: 0.001  # 提高精度
   input_size: 300  # 与降维后的特征维度保持一致，300
   output_size: 39138   # 与数据集中的类别数量保持一致，39138
   
