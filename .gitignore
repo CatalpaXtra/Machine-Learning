@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+
+# Models
+*.pkl
+
+# folders
+dataset/
+models/
+results/
