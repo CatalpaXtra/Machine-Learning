@@ -2,6 +2,7 @@ import os
 import glob
 import numpy as np
 from tqdm import tqdm
+import torch
 
 def get_image_paths(data_dir):
     """获取所有图像路径和对应标签"""
@@ -37,7 +38,7 @@ def load_data(data_dir, feature_extractor, batch_size=1000, verbose=True):
         features = np.load(features_cache)
         labels = np.load(labels_cache)
         print("加载完成")
-        return features, labels
+        return torch.FloatTensor(features), torch.LongTensor(labels)
     
     # 如果缓存不存在，则提取特征
     print("提取特征并保存到 dataset/cache/")
@@ -55,4 +56,4 @@ def load_data(data_dir, feature_extractor, batch_size=1000, verbose=True):
     np.save(labels_cache, labels)
     print("特征提取完成，已保存到 dataset/cache/")
     
-    return features, labels
+    return torch.FloatTensor(features), torch.LongTensor(labels)

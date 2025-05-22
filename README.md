@@ -26,12 +26,12 @@
 
 ### 训练模型
 ```cmd
-python src/train.py --config config.yaml
+python src/main.py train --config config.yaml
 ```
 
 ### 测试模型
 ```cmd
-python src/test.py --config config.yaml
+python src/main.py test --config config.yaml
 ```
 
 ### 完整流程

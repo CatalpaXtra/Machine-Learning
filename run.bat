@@ -1,6 +1,6 @@
 @echo off
 echo ========================================================================
-echo                 SVM Aircraft Image Classification System
+echo                 PyTorch Aircraft Image Classification System
 echo ========================================================================
 
 :: 确保目录存在

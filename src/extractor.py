@@ -5,6 +5,9 @@ from tensorflow.keras.preprocessing import image
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import joblib
+import torch
+import torchvision.models as models
+import torchvision.transforms as transforms
 
 
 class FeatureExtractor:
@@ -38,16 +41,20 @@ class FeatureExtractor:
         if self.cnn_model is None:
             print(f"正在加载{self.cnn_type.upper()}模型...")
             if self.cnn_type == 'vgg16':
-                self.cnn_model = VGG16(weights='imagenet', include_top=False, pooling='avg')
-                self.preprocess_func = vgg_preprocess
+                self.cnn_model = models.vgg16(pretrained=True)
+                self.cnn_model.eval()
+                self.transform = transforms.Compose([
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                ])
             else:
                 raise ValueError(f"未识别的CNN类型: {self.cnn_type}")
             print(f"{self.cnn_type.upper()}特征提取器加载完成")
         
-        img_array = image.img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array = self.preprocess_func(img_array)
-        return self.cnn_model.predict(img_array, verbose=0).flatten()
+        img_tensor = self.transform(img).unsqueeze(0)
+        with torch.no_grad():
+            features = self.cnn_model(img_tensor)
+        return features.numpy().flatten()
     
     
     def extract_features(self, image_path):
@@ -126,8 +133,12 @@ class FeatureExtractor:
         if extractor.method == 'cnn':
             print(f"正在加载{extractor.cnn_type.upper()}模型...")
             if extractor.cnn_type == 'vgg16':
-                extractor.cnn_model = VGG16(weights='imagenet', include_top=False, pooling='avg')
-                extractor.preprocess_func = vgg_preprocess
+                extractor.cnn_model = models.vgg16(pretrained=True)
+                extractor.cnn_model.eval()
+                extractor.transform = transforms.Compose([
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                ])
             else:
                 raise ValueError(f"未识别的CNN类型: {extractor.cnn_type}")
             print(f"{extractor.cnn_type.upper()}特征提取器加载完成")
