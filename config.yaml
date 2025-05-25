@@ -43,6 +43,7 @@ model:
     factor: 0.5
     patience: 3
     min_lr: 0.000001
+  unfreeze_layers: 2  # 解冻最后几层进行微调
 
 # 保存模型
 output:
