@@ -1,7 +1,5 @@
 import numpy as np
-import joblib
 from datetime import datetime
-from sklearn.svm import SVC
 from utils.config import load_config
 from data_loader import load_data
 from extractor import FeatureExtractor
@@ -9,7 +7,7 @@ from utils.visualization import plot_confusion_matrix, plot_roc_curve
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.metrics import roc_auc_score
 import torch
-from train import SimpleNN
+from train import ImprovedNN
 import warnings
 
 # 忽略警告
@@ -33,7 +31,7 @@ def calculate_metrics(y_true, y_pred, y_prob):
     return metrics
 
 
-def test(feature_extractor, model, config):
+def test(feature_extractor, model, config, device):
     # 加载测试数据
     test_features, test_labels = load_data(
         config['data']['test_dir'],
@@ -47,16 +45,35 @@ def test(feature_extractor, model, config):
     
     # 将NumPy数组转换为PyTorch张量
     test_features = torch.FloatTensor(test_features)
+    test_labels = torch.LongTensor(test_labels)
+    
+    # 创建数据加载器
+    test_dataset = torch.utils.data.TensorDataset(test_features, test_labels)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=config['model']['batch_size'], shuffle=False)
     
     # 预测
     model.eval()
+    all_predictions = []
+    all_probabilities = []
+    all_labels = []
+    
     with torch.no_grad():
-        outputs = model(test_features)
-        _, predictions = torch.max(outputs, 1)
-        probabilities = torch.nn.functional.softmax(outputs, dim=1)
+        for inputs, labels in test_loader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = model(inputs)
+            _, predictions = torch.max(outputs, 1)
+            probabilities = torch.nn.functional.softmax(outputs, dim=1)
+            
+            all_predictions.extend(predictions.cpu().numpy())
+            all_probabilities.extend(probabilities.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
     
     # 计算评估指标
-    metrics = calculate_metrics(test_labels.numpy(), predictions.numpy(), probabilities.numpy())
+    metrics = calculate_metrics(
+        np.array(all_labels),
+        np.array(all_predictions),
+        np.array(all_probabilities)
+    )
     
     # 输出评估结果
     print("\n评估结果:")
@@ -64,8 +81,12 @@ def test(feature_extractor, model, config):
         print(f"{metric_name}: {value:.4f}")
     
     # 绘制混淆矩阵和ROC曲线
-    plot_confusion_matrix(test_labels.numpy(), predictions.numpy(), config['output']['results_dir'])
-    # plot_roc_curve(test_labels.numpy(), probabilities.numpy(), config['output']['results_dir'])
+    plot_confusion_matrix(
+        np.array(all_labels),
+        np.array(all_predictions),
+        config['output']['results_dir']
+    )
+    # plot_roc_curve(np.array(all_labels), np.array(all_probabilities), config['output']['results_dir'])
 
 
 def main(args):
@@ -73,14 +94,27 @@ def main(args):
     config = load_config(args.config)
     print(f"开始测试: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
+    # 设置设备
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"使用设备: {device}")
+    
     # 加载模型
-    model = SimpleNN(input_size=config['model']['input_size'], hidden_size=128, output_size=config['model']['output_size'])
-    model.load_state_dict(torch.load(config['output']['model_path']))
+    model = ImprovedNN(
+        input_size=config['model']['input_size'],
+        hidden_sizes=config['model']['hidden_sizes'],
+        output_size=config['model']['output_size'],
+        dropout_rate=config['model']['dropout_rate']
+    ).to(device)
+    
+    # 加载检查点
+    checkpoint = torch.load(config['output']['model_path'])
+    model.load_state_dict(checkpoint['model_state_dict'])
+    print(f"加载模型完成，最佳验证准确率: {checkpoint['best_val_acc']:.2f}%")
     
     # 加载特征提取器
     feature_extractor = FeatureExtractor.load(config['output']['feature_extractor_path'])
     
-    test(feature_extractor, model, config)
+    test(feature_extractor, model, config, device)
     
     print(f"测试完成: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 

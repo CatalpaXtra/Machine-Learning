@@ -30,7 +30,20 @@ vgg16:
 model:
   input_size: 300  # 与降维后的特征维度保持一致，300
   output_size: 39138   # 与数据集中的类别数量保持一致，39138
-  
+  hidden_sizes: [512, 256, 128, 64]  # 神经网络隐藏层大小
+  dropout_rate: 0.3
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 32
+  num_epochs: 50
+  early_stopping:
+    patience: 10
+    min_delta: 0.001
+  lr_scheduler:
+    factor: 0.5
+    patience: 3
+    min_lr: 0.000001
+
 # 保存模型
 output:
   model_path: "models/pytorch_model.pkl"
