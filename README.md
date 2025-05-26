@@ -1,9 +1,8 @@
-# SVM航空器图像分类系统
+# PyTorch航空器图像分类系统
 ## 项目结构
 将 `test` `train` 文件夹放至 `dataset` 文件夹下
 ```
 ├─dataset
-│  ├─cache
 │  ├─test
 │  └─train
 │
@@ -22,16 +21,16 @@
 - 测试集：2,305张图像，不固定分辨率，9种航空器类型
 
 ## 使用方法
-为节省时间，本项目将经CNN提取到的特征存至 `dataset/cache` 文件夹下，将训练好的模型存至 `models` 文件夹下  
+为节省时间，本项目将训练好的模型存至 `models` 文件夹下  
 
 ### 训练模型
 ```cmd
-python src/main.py train --config config.yaml
+python src/main.py train
 ```
 
 ### 测试模型
 ```cmd
-python src/main.py test --config config.yaml
+python src/main.py test
 ```
 
 ### 完整流程
