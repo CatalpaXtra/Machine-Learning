@@ -6,20 +6,20 @@ data:
 
 # 通用PyTorch模型参数
 model:
-  hidden_sizes: [512, 256, 128, 64]  # 神经网络隐藏层大小
-  dropout_rate: 0.3
-  batch_size: 64
-  learning_rate: 0.001
-  weight_decay: 0.0001
-  num_epochs: 20
+  hidden_sizes: [1024, 512, 256, 128]  # 增加网络容量
+  dropout_rate: 0.4  # 增加dropout以防止过拟合
+  batch_size: 32  # 减小batch size以提高泛化能力
+  learning_rate: 0.0005  # 降低学习率以获得更稳定的训练
+  weight_decay: 0.0005  # 增加权重衰减以加强正则化
+  num_epochs: 100  # 增加训练轮数
   early_stopping:
-    patience: 5
-    min_delta: 0.001
+    patience: 15  # 增加早停耐心值
+    min_delta: 0.0005  # 降低最小改善阈值
   lr_scheduler:
     factor: 0.5
-    patience: 2
+    patience: 5
     min_lr: 0.000001
-  unfreeze_layers: 2
+  unfreeze_layers: 4
 
 # 保存模型
 output:

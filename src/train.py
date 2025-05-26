@@ -16,7 +16,7 @@ def setup_logging(model_dir):
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(os.path.join(model_dir, 'training.log'), encoding='utf-8'),
+            logging.FileHandler(os.path.join(model_dir, 'training.log')),
             logging.StreamHandler()
         ]
     )
@@ -76,10 +76,10 @@ def main():
     
     # 设置设备
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    logging.info(f'Using device: {device}')
     
     # 设置日志
     setup_logging(config['output']['model_dir'])
+    logging.info(f'Using device: {device}')
     
     # 获取数据加载器
     train_loader, val_loader, num_classes = get_data_loaders(config)

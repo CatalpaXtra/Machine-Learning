@@ -16,7 +16,7 @@ def setup_logging(model_dir):
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(os.path.join(model_dir, 'testing.log'), encoding='utf-8'),
+            logging.FileHandler(os.path.join(model_dir, 'testing.log')),
             logging.StreamHandler()
         ]
     )
@@ -75,7 +75,7 @@ def main():
     logging.info(f'Test Loss: {test_loss:.4f}')
     
     # 计算分类报告
-    report = classification_report(all_labels, all_preds)
+    report = classification_report(all_labels, all_preds, digits=4)
     logging.info('\nClassification Report:')
     logging.info('\n' + report)
     
