@@ -8,6 +8,7 @@ from tqdm import tqdm
 from data_loader import get_data_loaders
 from models import ImageClassifier
 import logging
+from torch.cuda.amp import autocast, GradScaler
 
 def setup_logging(model_dir):
     """设置日志，同时输出到控制台和文件"""
@@ -22,7 +23,7 @@ def setup_logging(model_dir):
     )
 
 
-def train_epoch(model, train_loader, criterion, optimizer, device):
+def train_epoch(model, train_loader, criterion, optimizer, device, scaler):
     model.train()
     total_loss = 0
     correct = 0
@@ -30,14 +31,19 @@ def train_epoch(model, train_loader, criterion, optimizer, device):
     
     pbar = tqdm(train_loader, desc='Training')
     for images, labels in pbar:
-        images, labels = images.to(device), labels.to(device)
+        images, labels = images.to(device, non_blocking=True), labels.to(device, non_blocking=True)
         
         optimizer.zero_grad()
-        outputs = model(images)
-        loss = criterion(outputs, labels)
         
-        loss.backward()
-        optimizer.step()
+        # 使用混合精度训练
+        with autocast():
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+        
+        # 使用scaler进行反向传播
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
         
         total_loss += loss.item()
         _, predicted = outputs.max(1)
@@ -57,9 +63,12 @@ def validate(model, val_loader, criterion, device):
     
     with torch.no_grad():
         for images, labels in tqdm(val_loader, desc='Validation'):
-            images, labels = images.to(device), labels.to(device)
-            outputs = model(images)
-            loss = criterion(outputs, labels)
+            images, labels = images.to(device, non_blocking=True), labels.to(device, non_blocking=True)
+            
+            # 使用混合精度推理
+            with autocast():
+                outputs = model(images)
+                loss = criterion(outputs, labels)
             
             total_loss += loss.item()
             _, predicted = outputs.max(1)
@@ -93,8 +102,16 @@ def main():
     optimizer = optim.Adam(
         model.parameters(),
         lr=config['model']['learning_rate'],
-        weight_decay=config['model']['weight_decay']
+        weight_decay=config['model']['weight_decay'],
+        betas=(
+            config['model']['optimizer']['beta1'],
+            config['model']['optimizer']['beta2']
+        ),
+        eps=config['model']['optimizer']['eps']
     )
+    
+    # 创建GradScaler用于混合精度训练
+    scaler = GradScaler()
     
     # 学习率调度器
     scheduler = ReduceLROnPlateau(
@@ -102,7 +119,8 @@ def main():
         mode='min',
         factor=config['model']['lr_scheduler']['factor'],
         patience=config['model']['lr_scheduler']['patience'],
-        min_lr=config['model']['lr_scheduler']['min_lr']
+        min_lr=config['model']['lr_scheduler']['min_lr'],
+        verbose=True  # 添加verbose参数以显示学习率变化
     )
     
     # 训练循环
@@ -113,7 +131,7 @@ def main():
         logging.info(f'\nEpoch {epoch+1}/{config["model"]["num_epochs"]}')
         
         # 训练
-        train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device)
+        train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device, scaler)
         logging.info(f'Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%')
         
         # 验证
@@ -122,9 +140,11 @@ def main():
         
         # 学习率调整
         scheduler.step(val_loss)
+        current_lr = optimizer.param_groups[0]['lr']
+        logging.info(f'Current learning rate: {current_lr:.8f}')
         
         # 保存最佳模型
-        if val_loss < best_val_loss:
+        if val_loss < best_val_loss - config['model']['early_stopping']['min_delta']:
             best_val_loss = val_loss
             patience_counter = 0
             # 保存模型到models目录
@@ -133,6 +153,7 @@ def main():
             logging.info(f'Saved best model to {model_path}')
         else:
             patience_counter += 1
+            logging.info(f'No improvement for {patience_counter} epochs')
             
         # 早停
         if patience_counter >= config['model']['early_stopping']['patience']:

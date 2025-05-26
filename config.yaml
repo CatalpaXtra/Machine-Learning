@@ -3,23 +3,28 @@ data:
   train_dir: "dataset/train"
   test_dir: "dataset/test"
   classes_file: "dataset/classes.txt"
+  num_workers: 4  # 数据加载的工作进程数
+  pin_memory: true  # 使用固定内存加速数据传输
 
 # 通用PyTorch模型参数
 model:
   hidden_sizes: [1024, 512, 256, 128]  # 增加网络容量
-  dropout_rate: 0.4  # 增加dropout以防止过拟合
-  batch_size: 32  # 减小batch size以提高泛化能力
-  learning_rate: 0.0005  # 降低学习率以获得更稳定的训练
-  weight_decay: 0.0005  # 增加权重衰减以加强正则化
-  num_epochs: 100  # 增加训练轮数
+  dropout_rate: 0.3  # 降低dropout率，因为现在所有层都在训练
+  batch_size: 64  # 增加batch size以提高训练稳定性
+  learning_rate: 0.0001  # 降低学习率，因为所有层都在训练
+  weight_decay: 0.0001  # 降低权重衰减，避免过度正则化
+  num_epochs: 100  # 保持训练轮数
   early_stopping:
-    patience: 15  # 增加早停耐心值
-    min_delta: 0.0005  # 降低最小改善阈值
+    patience: 10  # 减少早停耐心值，因为训练可能更快收敛
+    min_delta: 0.001  # 调整最小改善阈值
   lr_scheduler:
-    factor: 0.5
-    patience: 5
-    min_lr: 0.000001
-  unfreeze_layers: 4
+    factor: 0.2  # 更激进的学习率衰减
+    patience: 3  # 减少学习率调整的耐心值
+    min_lr: 0.0000001  # 降低最小学习率
+  optimizer:
+    beta1: 0.9  # Adam优化器的beta1参数
+    beta2: 0.999  # Adam优化器的beta2参数
+    eps: 1.0e-8  # Adam优化器的epsilon参数
 
 # 保存模型
 output:
