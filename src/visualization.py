@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, roc_curve, auc
@@ -16,6 +17,10 @@ def plot_confusion_matrix(y_true, y_pred, results_dir):
         y_pred: 预测标签
         results_dir: 结果保存目录
     """
+    # 确保输入是numpy数组
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    
     # 计算混淆矩阵
     cm = confusion_matrix(y_true, y_pred)
     

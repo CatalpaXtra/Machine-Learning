@@ -9,13 +9,14 @@ import logging
 from sklearn.metrics import classification_report, confusion_matrix
 from visualization import plot_confusion_matrix
 
-def setup_logging(results_dir):
-    os.makedirs(results_dir, exist_ok=True)
+def setup_logging(model_dir):
+    """设置日志，同时输出到控制台和文件"""
+    os.makedirs(model_dir, exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(os.path.join(results_dir, 'testing.log')),
+            logging.FileHandler(os.path.join(model_dir, 'testing.log'), encoding='utf-8'),
             logging.StreamHandler()
         ]
     )
@@ -49,10 +50,10 @@ def main():
     
     # 设置设备
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    logging.info(f'Using device: {device}')
     
     # 设置日志
-    setup_logging(config['output']['results_dir'])
+    setup_logging(config['output']['model_dir'])
+    logging.info(f'Using device: {device}')
     
     # 获取数据加载器
     _, test_loader, num_classes = get_data_loaders(config)
@@ -75,16 +76,12 @@ def main():
     
     # 计算分类报告
     report = classification_report(all_labels, all_preds)
-    logging.info('\nClassification Report:\n' + report)
+    logging.info('\nClassification Report:')
+    logging.info('\n' + report)
     
-    # 计算混淆矩阵
-    cm = confusion_matrix(all_labels, all_preds)
-    plot_confusion_matrix(cm, range(num_classes), config['output']['results_dir'])
+    # 绘制混淆矩阵
+    plot_confusion_matrix(all_labels, all_preds, config['output']['results_dir'])
     logging.info('Confusion matrix saved')
-    
-    # 保存分类报告
-    with open(os.path.join(config['output']['results_dir'], 'classification_report.txt'), 'w') as f:
-        f.write(report)
 
 
 if __name__ == '__main__':

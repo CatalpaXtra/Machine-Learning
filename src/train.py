@@ -9,13 +9,14 @@ from data_loader import get_data_loaders
 from models import ImageClassifier
 import logging
 
-def setup_logging(results_dir):
-    os.makedirs(results_dir, exist_ok=True)
+def setup_logging(model_dir):
+    """设置日志，同时输出到控制台和文件"""
+    os.makedirs(model_dir, exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(os.path.join(results_dir, 'training.log')),
+            logging.FileHandler(os.path.join(model_dir, 'training.log'), encoding='utf-8'),
             logging.StreamHandler()
         ]
     )
@@ -78,7 +79,7 @@ def main():
     logging.info(f'Using device: {device}')
     
     # 设置日志
-    setup_logging(config['output']['results_dir'])
+    setup_logging(config['output']['model_dir'])
     
     # 获取数据加载器
     train_loader, val_loader, num_classes = get_data_loaders(config)

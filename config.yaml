@@ -6,8 +6,6 @@ data:
 
 # 通用PyTorch模型参数
 model:
-  input_size: 300  # 与降维后的特征维度保持一致，300
-  output_size: 39138   # 与数据集中的类别数量保持一致，39138
   hidden_sizes: [512, 256, 128, 64]  # 神经网络隐藏层大小
   dropout_rate: 0.3
   batch_size: 64
@@ -26,4 +24,5 @@ model:
 # 保存模型
 output:
   model_path: "models/pytorch_model.pkl"
+  model_dir: "models"
   results_dir: "results"
