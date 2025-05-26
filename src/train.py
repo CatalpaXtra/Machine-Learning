@@ -5,7 +5,6 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from tqdm import tqdm
-import numpy as np
 from data_loader import get_data_loaders
 from models import ImageClassifier
 import logging
@@ -20,6 +19,7 @@ def setup_logging(results_dir):
             logging.StreamHandler()
         ]
     )
+
 
 def train_epoch(model, train_loader, criterion, optimizer, device):
     model.train()
@@ -47,6 +47,7 @@ def train_epoch(model, train_loader, criterion, optimizer, device):
     
     return total_loss/len(train_loader), 100.*correct/total
 
+
 def validate(model, val_loader, criterion, device):
     model.eval()
     total_loss = 0
@@ -65,6 +66,7 @@ def validate(model, val_loader, criterion, device):
             correct += predicted.eq(labels).sum().item()
     
     return total_loss/len(val_loader), 100.*correct/total
+
 
 def main():
     # 加载配置
@@ -124,8 +126,10 @@ def main():
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             patience_counter = 0
-            torch.save(model.state_dict(), os.path.join(config['output']['results_dir'], 'best_model.pth'))
-            logging.info('Saved best model')
+            # 保存模型到models目录
+            model_path = config['output']['model_path']
+            torch.save(model.state_dict(), model_path)
+            logging.info(f'Saved best model to {model_path}')
         else:
             patience_counter += 1
             
@@ -135,6 +139,7 @@ def main():
             break
     
     logging.info('Training completed')
+
 
 if __name__ == '__main__':
     main()

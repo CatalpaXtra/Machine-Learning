@@ -1,6 +1,6 @@
-import torch
 import torch.nn as nn
 import torchvision.models as models
+
 
 class ImageClassifier(nn.Module):
     def __init__(self, num_classes):

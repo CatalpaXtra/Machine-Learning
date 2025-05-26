@@ -1,9 +1,7 @@
 import os
-import torch
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 import torchvision.transforms as transforms
-import yaml
 
 class ImageDataset(Dataset):
     def __init__(self, data_dir, transform=None):
@@ -39,6 +37,7 @@ class ImageDataset(Dataset):
             
         label = self.class_to_idx[class_idx]
         return image, label
+
 
 def get_data_loaders(config):
     # 定义数据转换

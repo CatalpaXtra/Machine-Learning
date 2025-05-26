@@ -3,13 +3,11 @@ import yaml
 import torch
 import torch.nn as nn
 from tqdm import tqdm
-import numpy as np
 from data_loader import get_data_loaders
 from models import ImageClassifier
 import logging
 from sklearn.metrics import classification_report, confusion_matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
+from visualization import plot_confusion_matrix
 
 def setup_logging(results_dir):
     os.makedirs(results_dir, exist_ok=True)
@@ -21,6 +19,7 @@ def setup_logging(results_dir):
             logging.StreamHandler()
         ]
     )
+
 
 def test(model, test_loader, criterion, device):
     model.eval()
@@ -42,14 +41,6 @@ def test(model, test_loader, criterion, device):
     
     return total_loss/len(test_loader), all_preds, all_labels
 
-def plot_confusion_matrix(cm, classes, results_dir):
-    plt.figure(figsize=(20, 20))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-    plt.title('Confusion Matrix')
-    plt.ylabel('True Label')
-    plt.xlabel('Predicted Label')
-    plt.savefig(os.path.join(results_dir, 'confusion_matrix.png'))
-    plt.close()
 
 def main():
     # 加载配置
@@ -71,8 +62,9 @@ def main():
     model = ImageClassifier(num_classes).to(device)
     
     # 加载最佳模型
-    model.load_state_dict(torch.load(os.path.join(config['output']['results_dir'], 'best_model.pth')))
-    logging.info('Loaded best model')
+    model_path = config['output']['model_path']
+    model.load_state_dict(torch.load(model_path))
+    logging.info(f'Loaded best model from {model_path}')
     
     # 定义损失函数
     criterion = nn.CrossEntropyLoss()
@@ -93,6 +85,7 @@ def main():
     # 保存分类报告
     with open(os.path.join(config['output']['results_dir'], 'classification_report.txt'), 'w') as f:
         f.write(report)
+
 
 if __name__ == '__main__':
     main() 
