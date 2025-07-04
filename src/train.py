@@ -3,8 +3,8 @@ import random
 from torch.utils.data import DataLoader, Subset
 import torchvision.transforms as T
 from tqdm import tqdm
-from dataset import CocoDetectionDataset, collate_fn
-from model import get_model
+from src.dataset import CocoDetectionDataset, collate_fn
+from src.model import get_model
 
 
 """
@@ -56,12 +56,12 @@ def train(epochs=10, batch_size=5):
     except KeyboardInterrupt:
         print('\nTraining was interrupted and the current model is being saved...')
         torch.save(model.state_dict(), model_save_path)
-        print('Model saved to model.pth')
+        print(f'Model saved to {model_save_path}')
         return
 
     # 保存模型
     torch.save(model.state_dict(), model_save_path)
-    print('Model saved to model.pth')
+    print(f'Model saved to {model_save_path}')
 
 
 
@@ -69,7 +69,7 @@ def train(epochs=10, batch_size=5):
 执行带有验证集划分与早停的训练
 """
 def evaluate(model, val_loader, device):
-    model.eval()
+    model.train()  # 保持训练模式以获得loss字典
     total_loss = 0
     with torch.no_grad():
         for images, targets in val_loader:
@@ -158,9 +158,20 @@ def train_with_validation(epochs=10, batch_size=5, patience=3):
     except KeyboardInterrupt:
         print('\nTraining was interrupted and the current model is being saved...')
         torch.save(model.state_dict(), model_save_path)
-        print('Model saved to model.pth')
+        print(f'Model saved to {model_save_path}')
         return
 
     # 保存模型
     torch.save(model.state_dict(), model_save_path)
-    print('Model saved to model.pth')
+    print(f'Model saved to {model_save_path}')
+
+
+def main(train_mode='with_val', epochs=10, batch_size=5, patience=3):
+    if train_mode == 'normal':
+        train(epochs=epochs, batch_size=batch_size)
+    else:
+        train_with_validation(epochs=epochs, batch_size=batch_size, patience=patience)
+
+
+if __name__ == '__main__':
+    main()

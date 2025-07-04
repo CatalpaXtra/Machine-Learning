@@ -1,6 +1,6 @@
 import argparse
-from train import train, train_with_validation
-from predict import predict
+from src.train import main as train_main
+from src.predict import main as predict_main
 
 
 def parse_args():
@@ -17,12 +17,9 @@ def parse_args():
 def main():
     args = parse_args()
     if args.mode == 'train':
-        if args.train_mode == 'normal':
-            train(epochs=args.epochs, batch_size=args.batch_size)
-        else:
-            train_with_validation(epochs=args.epochs, batch_size=args.batch_size, patience=args.patience)
+        train_main(train_mode=args.train_mode, epochs=args.epochs, batch_size=args.batch_size, patience=args.patience)
     elif args.mode == 'predict':
-        predict(score_thresh=args.score_thresh)
+        predict_main(score_thresh=args.score_thresh)
 
 
 if __name__ == '__main__':

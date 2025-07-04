@@ -4,14 +4,14 @@ import torch
 from PIL import Image
 import torchvision.transforms as T
 from tqdm import tqdm
-from model import get_model
+from src.model import get_model
 
 
 def predict(score_thresh=0.5):
     # 相关参数
     test_img_dir = 'data/test/images'
     pred_json_path = 'data/test/pred.json'
-    model_save_path = 'model/model.pth'
+    model_save_path = 'model/model_wv.pth'
     num_classes = 4
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
@@ -49,4 +49,12 @@ def predict(score_thresh=0.5):
     pred_json['annotations'] = results
     with open(pred_json_path, 'w', encoding='utf-8') as f:
         json.dump(pred_json, f, ensure_ascii=False, indent=2)
-    print(f"Saved predictions to {pred_json_path}") 
+    print(f"Saved predictions to {pred_json_path}")
+
+
+def main(score_thresh=0.5):
+    predict(score_thresh=score_thresh)
+
+
+if __name__ == '__main__':
+    main()
