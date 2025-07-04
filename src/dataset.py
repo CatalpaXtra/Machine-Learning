@@ -36,12 +36,11 @@ class CocoDetectionDataset(Dataset):
             # COCO格式bbox为[x, y, w, h]，转为[x1, y1, x2, y2]
             boxes.append([bbox[0], bbox[1], bbox[0]+bbox[2], bbox[1]+bbox[3]])
             labels.append(ann['category_id'] + 1)
-            # labels.append(ann['category_id'])
         
         # 没有目标时，返回shape为(0, 4)的boxes和(0,)的labels
         if len(boxes) == 0:
             boxes = torch.zeros((0, 4), dtype=torch.float32)
-            labels = torch.zeros((0,), dtype=torch.int64)
+            labels = torch.zeros((0), dtype=torch.int64)
         else:
             boxes = torch.as_tensor(boxes, dtype=torch.float32)
             labels = torch.as_tensor(labels, dtype=torch.int64)

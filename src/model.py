@@ -2,7 +2,7 @@ import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
 
-def get_model(num_classes, model_type='resnet50v2'):
+def get_model(num_classes, model_type='resnet50'):
     if model_type == 'resnet50v2':
         model = torchvision.models.detection.fasterrcnn_resnet50_fpn_v2(pretrained=True)
     else:

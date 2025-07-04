@@ -6,7 +6,7 @@ from src.predict import main as predict_main
 def parse_args():
     parser = argparse.ArgumentParser(description='Floating Window Detection')
     parser.add_argument('--mode', choices=['train', 'predict'], required=True, help='train or predict')
-    parser.add_argument('--train_mode', choices=['normal', 'with_val'], default='with_val', help='Train mode')
+    parser.add_argument('--train_mode', choices=['normal', 'with_val', 'kfold'], default='kfold', help='Train mode')
     parser.add_argument('--epochs', type=int, default=10, help='Number of training epochs')
     parser.add_argument('--batch_size', type=int, default=5, help='Batch size for training')
     parser.add_argument('--patience', type=int, default=3, help='Early stopping patience for training')
