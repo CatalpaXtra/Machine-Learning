@@ -35,6 +35,7 @@ data/
 └── data/
     ├── train/
     └── test/
+└── model/            # 存放模型
 ```
 
 ## 安装依赖
@@ -46,7 +47,11 @@ pip install -r requirements.txt
 ## 使用方法
 ### 训练模型
 ```bash
-python main.py --mode train --epochs 10 --batch_size 5
+# 普通训练（不使用验证集和早停）
+python main.py --mode train --train_mode normal --epochs 10 --batch_size 5
+
+# 带验证集和早停的训练（推荐）
+python main.py --mode train --train_mode with_val --epochs 10 --batch_size 5 --patience 3
 ```
 
 ### 推理并生成COCO格式结果

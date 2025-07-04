@@ -7,7 +7,7 @@ from tqdm import tqdm
 from model import get_model
 
 
-def predict(score_thresh=0.1):
+def predict(score_thresh=0.5):
     # 相关参数
     test_img_dir = 'data/test/images'
     pred_json_path = 'data/test/pred.json'
