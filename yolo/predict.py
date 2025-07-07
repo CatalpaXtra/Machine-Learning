@@ -121,8 +121,8 @@ def main():
     predict_and_fill_annotations(
         model_path=args.model,
         batch_size=args.batch_size,
-        test_images_dir='test/images',
-        pred_json_path='test/pred.json',
+        test_images_dir='data/test/images',
+        pred_json_path='data/test/pred.json',
     )
 
 

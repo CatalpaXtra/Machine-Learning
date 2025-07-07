@@ -1,8 +1,8 @@
 # 数据集路径配置
 path: ./
-train: train/images
-val: val/images
-test: test/images
+train: data/train/images
+val: data/val/images
+test: data/test/images
 
 # 类别配置
 nc: 3  # 类别数量

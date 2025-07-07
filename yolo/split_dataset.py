@@ -99,19 +99,10 @@ def main():
     
     args = parser.parse_args()
     
-    # 检查文件是否存在
-    if not os.path.exists(args.train_images):
-        print(f"错误: 训练图片目录不存在: {args.train_images}")
-        return
-    
-    if not os.path.exists(args.train_annotations):
-        print(f"错误: 训练标注文件不存在: {args.train_annotations}")
-        return
-    
     # 执行分割
     split_dataset(
-        train_images_dir='train/images',
-        train_annotations_file='train/train.json',
+        train_images_dir='data/train/images',
+        train_annotations_file='data/train/train.json',
         val_ratio=args.val_ratio,
         seed=args.seed
     )

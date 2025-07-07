@@ -11,9 +11,6 @@ def convert_coco_to_yolo(coco_json_path, output_dir):
     labels_dir = Path(output_dir) / 'labels'
     labels_dir.mkdir(exist_ok=True)
     
-    # 创建文件名到ID的映射
-    file_to_id = {img['file_name']: img['id'] for img in coco_data['images']}
-    
     # 按图像分组标注
     annotations_by_image = {}
     for ann in coco_data['annotations']:
@@ -93,20 +90,15 @@ def convert_coco_to_yolo(coco_json_path, output_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='COCO到YOLO格式转换工具')
-    parser.add_argument('--input', type=str, required=True, help='COCO格式标注文件路径')
-    parser.add_argument('--output', type=str, required=True, help='输出目录路径')
+    print(f"\n开始转换: data/train/train.json -> data/train/labels/")
+    result = convert_coco_to_yolo('data/train/train.json', 'data/train')
+    print(f"\n转换成功完成!")
+    print(f"转换结果: {result}")
     
-    args = parser.parse_args()
-    
-    # 执行转换
-    print(f"\n开始转换: {args.input} -> {args.output}")
-    try:
-        result = convert_coco_to_yolo(args.input, args.output)
-        print(f"\n转换成功完成!")
-        print(f"转换结果: {result}")
-    except Exception as e:
-        print(f"转换失败: {e}")
+    print(f"\n开始转换: data/val/val.json -> data/val/labels/")
+    result = convert_coco_to_yolo('data/val/val.json', 'data/val')
+    print(f"\n转换成功完成!")
+    print(f"转换结果: {result}")
 
 
 if __name__ == '__main__':

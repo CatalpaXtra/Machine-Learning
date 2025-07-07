@@ -16,7 +16,7 @@ def train_model(args):
         batch=args.batch_size,
         patience=20,
         save=True,
-        project='runs',
+        project='model_yolo',
         name='train',
         
         augment=True,      # 启用数据增强
