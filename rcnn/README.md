@@ -32,13 +32,9 @@ pip install -r requirements.txt
 ```
 
 ## 使用方法
-#### 训练模型
+#### 训练并预测
 ```bash
-python main.py --mode train --train_mode kfold --epochs 20 --batch_size 4
-```
-
-### 推理并生成COCO格式结果
-```bash
-python main.py --mode predict --score_thresh 0.5
+python rcnn/main.py --mode train --train_mode kfold --epochs 20 --batch_size 4
+python rcnn/main.py --mode predict --score_thresh 0.5
 ```
 

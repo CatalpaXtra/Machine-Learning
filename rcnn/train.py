@@ -3,15 +3,15 @@ import random
 from torch.utils.data import DataLoader, Subset
 import torchvision.transforms as T
 from tqdm import tqdm
-from src.dataset import CocoDetectionDataset, collate_fn
-from src.model import get_model
+from rcnn.dataset import CocoDetectionDataset, collate_fn
+from rcnn.model import get_model
 from sklearn.model_selection import KFold
 
 
-"""
-执行标准训练，不包含验证集划分和早停机制
-"""
 def train(epochs=10, batch_size=5):
+    """
+    标准训练，不包含验证集划分和早停机制
+    """
     # 相关参数
     train_img_dir = 'data/train/images'
     train_ann_file = 'data/train/train.json'
@@ -65,10 +65,6 @@ def train(epochs=10, batch_size=5):
     print(f'Model saved to {model_save_path}')
 
 
-
-"""
-执行带有验证集划分与早停的训练
-"""
 def evaluate(model, val_loader, device):
     model.train()  # 保持训练模式以获得loss字典
     total_loss = 0
@@ -83,6 +79,9 @@ def evaluate(model, val_loader, device):
 
 
 def train_with_validation(epochs=10, batch_size=5, patience=3):
+    """
+    执行带有验证集划分与早停的训练
+    """
     # 相关参数
     train_img_dir = 'data/train/images'
     train_ann_file = 'data/train/train.json'
@@ -167,10 +166,10 @@ def train_with_validation(epochs=10, batch_size=5, patience=3):
     print(f'Model saved to {model_save_path}')
 
 
-"""
-K折交叉验证训练，输出每个fold的最佳验证损失和平均损失
-"""
 def train_with_kfold(k=5, epochs=10, batch_size=5, patience=3):
+    """
+    k折交叉验证训练，输出每个fold的最佳验证损失和平均损失
+    """
     train_img_dir = 'data/train/images'
     train_ann_file = 'data/train/train.json'
     num_classes = 4

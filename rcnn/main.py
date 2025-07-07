@@ -1,6 +1,6 @@
 import argparse
-from src.train import main as train_main
-from src.predict import main as predict_main
+from rcnn.train import main as train_main
+from rcnn.predict import main as predict_main
 
 
 def parse_args():

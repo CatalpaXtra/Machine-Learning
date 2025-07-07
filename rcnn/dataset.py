@@ -37,7 +37,7 @@ class CocoDetectionDataset(Dataset):
             boxes.append([bbox[0], bbox[1], bbox[0]+bbox[2], bbox[1]+bbox[3]])
             labels.append(ann['category_id'] + 1)
         
-        # 没有目标时，返回shape为(0, 4)的boxes和(0,)的labels
+        # 没有目标时，返回shape为(0, 4)的boxes和(0)的labels
         if len(boxes) == 0:
             boxes = torch.zeros((0, 4), dtype=torch.float32)
             labels = torch.zeros((0), dtype=torch.int64)
@@ -61,7 +61,5 @@ class CocoDetectionDataset(Dataset):
         return len(self.images)
 
 
-# 用于DataLoader批量加载时的自定义打包函数
-# 保证每个batch是元组列表，适配目标检测模型输入
 def collate_fn(batch):
     return tuple(zip(*batch))

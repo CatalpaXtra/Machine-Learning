@@ -432,7 +432,7 @@ def predict(score_thresh=0.5):
     # 相关参数
     test_img_dir = 'data/test/images'
     pred_json_path = 'data/test/pred.json'
-    model_save_path = 'model/model_wv.pth'
+    model_save_path = 'model/model.pth'
     num_classes = 4
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
@@ -473,7 +473,7 @@ def predict(score_thresh=0.5):
     print(f"Saved predictions to {pred_json_path}")
 
 
-def main(predict_mode='kfold_individual', score_thresh=0.5, k=5, ensemble_method='nms', nms_threshold=0.5):
+def main(predict_mode='kfold_ensemble', score_thresh=0.5, k=5, ensemble_method='nms', nms_threshold=0.5):
     """主函数，支持多种预测模式"""
     if predict_mode == 'single':
         # 单模型预测

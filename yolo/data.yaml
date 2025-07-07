@@ -1,0 +1,9 @@
+# 数据集路径配置
+path: ./
+train: train/images
+val: val/images
+test: test/images
+
+# 类别配置
+nc: 3  # 类别数量
+names: ['floating_window', 'X_mark', 'text_button']
