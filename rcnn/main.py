@@ -11,6 +11,7 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=5, help='Batch size for training')
     parser.add_argument('--patience', type=int, default=3, help='Early stopping patience for training')
     parser.add_argument('--score_thresh', type=float, default=0.5, help='Score threshold for prediction')
+    parser.add_argument('--predict_mode', choices=['single', 'kfold_ensemble', 'kfold_individual'], default='kfold_ensemble', help='Predict mode')
     return parser.parse_args()
 
 
@@ -19,7 +20,7 @@ def main():
     if args.mode == 'train':
         train_main(train_mode=args.train_mode, epochs=args.epochs, batch_size=args.batch_size, patience=args.patience)
     elif args.mode == 'predict':
-        predict_main(score_thresh=args.score_thresh)
+        predict_main(predict_mode=args.predict_mode, score_thresh=args.score_thresh)
 
 
 if __name__ == '__main__':

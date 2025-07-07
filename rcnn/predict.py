@@ -4,7 +4,7 @@ import torch
 from PIL import Image
 import torchvision.transforms as T
 from tqdm import tqdm
-from src.model import get_model
+from rcnn.model import get_model
 import numpy as np
 from collections import defaultdict
 import torchvision.ops
@@ -254,7 +254,6 @@ def calculate_iou(box1, box2):
 
 
 def predict_kfold_models(k=5, score_thresh=0.5, ensemble_method='nms', nms_threshold=0.5):
-    print(f"\n=== Ensemble predictions using {ensemble_method} method ===")
     """对K折交叉验证的多个模型分别进行预测和集成"""
     # 相关参数
     test_img_dir = 'data/test/images'
@@ -367,7 +366,6 @@ def predict_single_model_validation(model_path, test_img_dir, pred_json_path, sc
 
 
 def predict_kfold_individual_validation(k=5, score_thresh=0.5):
-    print("Will generate separate prediction files for each fold model:")
     """对K折交叉验证的每个模型分别进行预测和验证"""
     # 相关参数
     test_img_dir = 'data/test/images'
@@ -486,8 +484,6 @@ def main(predict_mode='kfold_ensemble', score_thresh=0.5, k=5, ensemble_method='
         predict_kfold_individual_validation(k=k, score_thresh=score_thresh)
     else:
         print(f"Unknown predict_mode: {predict_mode}")
-        print("Available modes: 'single', 'kfold_ensemble', 'kfold_individual'")
-        print("Available ensemble methods: 'average', 'max', 'nms'")
 
 
 if __name__ == '__main__':

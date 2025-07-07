@@ -45,8 +45,8 @@ pip install -r requirements.txt
 基于 PyTorch 和 torchvision，
 ### 训练并预测
 ```bash
-python rcnn/main.py --mode train --train_mode kfold --epochs 20 --batch_size 4
-python rcnn/main.py --mode predict --score_thresh 0.5
+python -m rcnn.main --mode train --train_mode kfold --epochs 20 --batch_size 4
+python -m rcnn.main --mode predict --predict_mode kfold_ensemble --score_thresh 0.5
 ```
 
 

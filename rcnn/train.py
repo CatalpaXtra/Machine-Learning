@@ -85,7 +85,7 @@ def train_with_validation(epochs=10, batch_size=5, patience=3):
     # 相关参数
     train_img_dir = 'data/train/images'
     train_ann_file = 'data/train/train.json'
-    model_save_path = 'model/model_wv.pth'
+    model_save_path = 'model/model.pth'
     num_classes = 4  # 背景类别 + 3个类别
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
