@@ -50,8 +50,11 @@ pip install -r requirements.txt
 
 
 ## 数据清洗 && 可视化
+对数据进行清洗，去除噪声、错误识别的目标框等，位于 `cleansing/` 路径下  
+似乎清洗后**预测准确率下降**，后续**弃用**
+
 ### 数据清洗
-`cleansing/clean_annotations.py` 用于对数据进行清洗和规范化，确保目标的边界框不超出原图范围
+`cleansing/clean_annotations.py` 对数据进行清洗和规范化，确保目标的边界框不超出原图范围
 
 运行方法：
 ```bash
@@ -86,7 +89,7 @@ python cleansing/manual_annotation.py
     {
       "image_id": 1,
       "category_id": 0,
-      "bbox": [x, y, width, height],
+      "bbox": ["x", "y", "width", "height"],
       "score": 1.0
     }
   ]
@@ -100,7 +103,7 @@ python cleansing/manual_annotation.py
 
 
 ## Faster R-CNN 项目
-基于 PyTorch 和 torchvision 实现
+基于 PyTorch 和 torchvision 实现，位于 `rcnn/` 路径下
 
 ### 训练并预测
 ```bash
@@ -110,7 +113,7 @@ python -m rcnn.main --mode predict --predict_mode kfold_ensemble --score_thresh 
 
 
 ## YOLOv8 项目
-基于 YOLOv8 实现，支持 COCO 与 YOLO 数据格式互转
+基于 YOLOv8 实现，支持 COCO 与 YOLO 数据格式互转，位于 `yolo/` 路径下
 
 ### 数据集划分
 ```bash
