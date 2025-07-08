@@ -28,15 +28,13 @@
 │   ├── main.py     
 │   ├── model.py      
 │   ├── predict.py
-│   ├── train.py
-│   └── README.md
+│   └── train.py
 ├── yolo/                     # YOLO 相关代码
 │   ├── coco_to_yolo_converter.py
 │   ├── data.yaml
 │   ├── predict.py
 │   ├── split_dataset.py
-│   ├── train.py
-│   └── README.md
+│   └── train.py
 │
 ├── requirements.txt          # 依赖包列表
 └── README.md                 # 项目说明文档
