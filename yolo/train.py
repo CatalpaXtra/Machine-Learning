@@ -19,7 +19,7 @@ def train_model(args):
         project='model_yolo',
         name='train',
         
-        augment=True,      # 启用数据增强
+        augment=True,       # 启用数据增强
         hsv_h=0.015,
         hsv_s=0.7,
         hsv_v=0.4,
@@ -29,8 +29,8 @@ def train_model(args):
         shear=0.01,
         flipud=0.5,
         fliplr=0.5,
-        mosaic=0.5, # good
-        mixup=0.1   # good
+        mosaic=0.5,         # 马赛克增强
+        mixup=0.1           # 混合增强
     )
     
     print(f"训练完成！模型保存在: {results.save_dir}")
